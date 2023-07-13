@@ -1,0 +1,6 @@
+build/
+.vscode/
+.cache/
+include/autogen
+include/AutoGenComputeOp.h
+*.pyc

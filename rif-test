@@ -1,0 +1,137 @@
+#!/usr/bin/env python3
+
+import argparse
+import sys
+import os
+import subprocess
+import random
+import time
+
+SRCTOP = os.path.dirname(os.path.abspath(__file__))
+OP_DEF = os.path.join(SRCTOP, 'include', 'CustomOperator.def')
+
+sys.path = [os.path.join(SRCTOP, 'scripts')] + sys.path
+
+import OpDefParser
+
+
+def gen_makefile(opts, output_file):
+  makefile_template = os.path.join(SRCTOP, 'Makefile.in')
+  with open(makefile_template, mode='r') as f:
+    template = f.read()
+
+  arch_flags = "-march=%s -mabi=%s -menable-experimental-extensions " %(opts.arch, opts.abi)
+  final_cflags = arch_flags + " -static " + opts.cflags
+
+  output = template.format(
+             SRCTOP=SRCTOP,
+             CC=opts.cc,
+             SIM=opts.sim,
+             CFLAGS=final_cflags,
+             NODE=opts.node,
+             LENGTH=opts.length,
+             ARCH=opts.arch,
+             SEED=opts.seed,
+             GEN_PATTERN=opts.gen,
+             GEN_PATH=opts.gen_path,
+             HAS_POLICY="--has-policy" if opts.has_policy else ""
+             )
+
+  with open(output_file, mode='w') as f:
+    f.write(output)
+
+def ma_filter(opts, opdef) :
+  if not opts.has_ma:
+    return "MaskAgnostic" not in opdef.op_attr
+  return True
+
+def ta_filter(opts, opdef) :
+  if not opts.has_ta:
+    return "TailAgnostic" not in opdef.op_attr
+  return True
+
+def policy_filter(opts, opdef) :
+  policy_attrs = ["TailUndisturbed", "MaskUndisturbed"]
+  valid = True
+  if not opts.has_policy:
+    for attr in opdef.op_attr:
+      if attr in policy_attrs:
+        valid = False
+  return valid
+
+def gen_rule_mk(opts, output_file):
+  opdef_file = os.path.join(SRCTOP, 'include', 'CustomOperator.def')
+  opdefs = OpDefParser.parse(opdef_file)
+  filters = [ta_filter, ma_filter, policy_filter]
+  filtered_op_types = []
+  for opdef in opdefs:
+    valid = True
+    for filter in filters:
+      if not filter(opts, opdef):
+        valid = False
+    if not valid:
+      continue
+    filtered_op_types.append(opdef.op_type)
+  filtered_op_types = sorted(list(set(filtered_op_types)))
+  with open(output_file, mode='w') as f:
+    f.write("TARGETS:= \\\n")
+    f.write(" \\\n".join(filtered_op_types))
+
+def main(argv):
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--gen',
+                      choices=['random_gen', 'fused_gen'], default='random_gen',
+                      help='Random gen pattern')
+  parser.add_argument('--gen-path',
+                      default='build/tool',
+                      help='Prebuilt random gen path')
+  parser.add_argument('--sim',
+                      help='Path to simulator')
+  parser.add_argument('--cc',
+                      help='Path to compiler')
+  parser.add_argument('--mode', choices=['full', 'fast'], default='full',
+                      help='Testing mode')
+  parser.add_argument('--node', type=int, default=10,
+                      help='Minimal # of node')
+  parser.add_argument('--length', type=int, default=500,
+                      help='Number of elements in each data')
+  parser.add_argument('--arch', default='rv64gcv_zfh_zvfh',
+                      help='Target arch config, default is rv64gcv_zvfh')
+  # TODO: We might derived the default ABI from ARCH.
+  parser.add_argument('--abi', default='lp64d',
+                      help='Target ABI config, default is lp64d')
+  parser.add_argument('--cflags', default='-O',
+                      help='Default compilation flag')
+  parser.add_argument('--seed', type=int, default = 0xdeadbeef,
+                      help='Fixed random seed')
+  parser.add_argument('--random', choices=['on', 'off'], default='off',
+                      help='Feed random seed')
+  parser.add_argument('--has-policy', action='store_true',
+                      help='Enable policy if set')
+  parser.add_argument('--has-ta', action='store_true',
+                      help='Enable ta if set')
+  parser.add_argument('--has-ma', action='store_true',
+                      help='Enable ma if set')
+
+  opts = parser.parse_args(argv)
+
+  if opts.random == 'on' :
+    gen_seed = (int)(time.time())
+    random.seed(gen_seed)
+    print ('Use time() to generate seed: ', gen_seed)
+    opts.seed = random.randint(0, 2**30)
+    print ('Generated seed: ', opts.seed)
+
+  if opts.sim is None:
+    print ('Using builtin metal-run by default.')
+    opts.sim = os.path.join(SRCTOP, 'prebuilt', 'metal-run', 'qemu-run')
+    if not os.path.exists(opts.sim):
+      print ('Init builtin metal-run')
+      subprocess.run("git submodule update --init --recursive prebuilt/metal-run",
+                     cwd=SRCTOP, shell=True)
+
+  gen_makefile(opts, "Makefile")
+  gen_rule_mk(opts, "rules.mk")
+  return 0
+
+sys.exit(main(sys.argv[1:]))

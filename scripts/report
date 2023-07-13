@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+
+import glob
+import sys
+import os
+import subprocess
+
+def report():
+  logs = glob.glob("*.log")
+
+  failed_case = 0
+  passed_case = 0
+  pass_list = []
+  failed_lists = dict()
+  failed_lists["COMPILE"] = []
+  failed_lists["GEN"] = []
+  failed_lists["RUN"] = []
+  failed_lists["COMPUTE"] = []
+  failed_lists["UNKNOWN"] = []
+
+  for log in logs:
+    testname = log.split('.')[0]
+
+    line = subprocess.check_output(['tail', '-1', log]).decode()
+    line = line.strip()
+    if line.endswith('FAIL') or line.endswith("fail"):
+      failed_case += 1
+      if line == 'COMPILE FAIL':
+        failed_lists["COMPILE"].append(testname)
+      elif line == 'GEN FAIL':
+        failed_lists["GEN"].append(testname)
+      elif line == 'RUN FAIL':
+        failed_lists["RUN"].append(testname)
+      elif line.endswith("fail") :
+        failed_lists["COMPUTE"].append(testname)
+      else:
+        print ("Unknown fail type for %s ???" % log)
+    elif line.endswith("pass"):
+      passed_case += 1
+      pass_list.append(testname)
+    else:
+      failed_lists["UNKNOWN"].append(testname)
+      print ("Unknown fail for %s ???" % log)
+
+  print ("Pass / Total: %d / %d" % (passed_case, failed_case + passed_case))
+
+  if failed_case != 0:
+    print ("Failed list:")
+    for reason, failed_list in failed_lists.items():
+      for failed_case in sorted(failed_list):
+        print (" - %s (%s fail)" %(failed_case, reason))
+
+  if failed_case != 0:
+    return 1
+  else:
+    return 0
+
+sys.exit(report())

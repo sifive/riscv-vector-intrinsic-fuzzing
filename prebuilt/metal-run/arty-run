@@ -1,0 +1,299 @@
+#! /usr/bin/env python3
+'''
+return code:
+    10      : this script hit exception
+    0       : this script exit without error, and return value after running on arty is 0.
+              ex: running timeout
+    non zero: this script exit without error, the value is the return value after running on arty.
+'''
+
+import time
+import re
+import os
+import subprocess
+import argparse
+import signal
+import threading
+import sys
+
+import utils
+utils.check_package('pexpect', version=3)
+utils.check_package('pyserial', version=3)
+
+import pexpect
+import serial
+
+
+GDB_PID = None
+OPENOCD_PID = None
+GET_OUTPUT_PID = None
+HIT_EXIT_FUNC = None
+HIT_EXCEPTION = False
+RET_CODE = 0
+
+def handle_ctrlc(*args):
+    print("fetch Ctrl-C !")
+    kill_qemu_and_openocd_sig_handler()
+
+def kill_qemu_and_openocd_sig_handler():
+    print("#### cleaning ####")
+    global OPENOCD_PID
+    global GDB_PID
+    global GET_OUTPUT_PID
+    global HIT_EXCEPTION
+    global RET_CODE
+
+    if GDB_PID:
+        print("killing gdb: %d"%GDB_PID)
+        os.kill(int(GDB_PID), signal.SIGTERM)
+    if OPENOCD_PID:
+        print("killing openocd: %d"%OPENOCD_PID)
+        os.kill(int(OPENOCD_PID), signal.SIGTERM)
+    if GET_OUTPUT_PID:
+        print("killing process of get output: %d"%GET_OUTPUT_PID)
+        os.kill(int(GET_OUTPUT_PID), signal.SIGTERM)
+
+    print("#### end of cleaning, then exiting  ####")
+    if HIT_EXCEPTION == True:
+        os._exit(10)
+    else:
+        os._exit(RET_CODE)
+
+def get_output( timeout, serial_port_id, file_path=None,
+                mode="a", baudrate=115200, debug=False):
+
+    port = serial.Serial(serial_port_id, baudrate=baudrate, timeout=1)
+    global HIT_EXIT_FUNC
+    time.sleep(2)
+    port.reset_output_buffer()
+    port.reset_input_buffer()
+    if debug:
+        print("start to receive output ......")
+    while HIT_EXIT_FUNC != True:
+        if debug == True:
+            print(".")
+        time.sleep(1)
+
+    # if we really want expact some string, remember use string as byte.
+    #rcv = port.read_until(b"USER EXIT")
+    # this aims to expact a string never happen, could be a problem
+    rcv = port.read_until(b"")
+    rcv = rcv.decode("utf-8")
+
+    # decorate log
+    rcv = "start tty({2}) output ({1}s)\n{0}\nend of tty({2}) output ({1}s)".\
+                                      format(rcv, timeout, serial_port_id)
+    if file_path == None:
+        print(rcv)
+        # need to use flush to really print, don't know why
+        sys.stdout.flush()
+    else:
+        with open(file_path, mode) as output_file:
+            output_file.write(rcv)
+    port.close()
+
+def get_gdb_port(config_file):
+    with open(config_file, "r") as config:
+        re_match = re.search("gdb_port\s*[0-9]*", config.read())
+        if re_match is not None:
+            port_number = re_match.group().split(" ")[-1]
+        else:
+            # use default port in OpenOCD
+            port_number = 3333
+        return port_number
+
+def run_a_binary(sys_args, clean_log=True):
+    global OPENOCD_PID
+    global GDB_PID
+    global GET_OUTPUT_PID
+    global HIT_EXIT_FUNC
+    global RET_CODE
+    binary_path = sys_args["executable"]
+    openocd_config = sys_args["openocd_config"]
+    openocd_path = sys_args["openocd"]
+    gdb_path = sys_args["gdb"]
+    timeout = sys_args["timeout"]
+    tty = sys_args["tty"]
+    debug = sys_args["debug"]
+
+    gdb_port_number = get_gdb_port(openocd_config)
+
+    # fork process to get_output
+    receive_t = threading.Thread(target=get_output, args=(timeout,
+                                                          tty,
+                                                          None,
+                                                          "a",
+                                                          "115200",
+                                                          debug))
+    #GET_OUTPUT_PID = p.tid
+    receive_t.start()
+
+    # turn on openocd
+    openocd_cmd = "{OPENOCD} -f {OPENOCD_CONFIG}".format(
+                                                OPENOCD = openocd_path,
+                                                OPENOCD_CONFIG=openocd_config)
+    if debug == True:
+        openocd = subprocess.Popen(openocd_cmd.split(" "),
+                           shell=False,
+                           stdin=open(os.devnull))
+    else:
+        openocd = subprocess.Popen(openocd_cmd.split(" "),
+                           shell=False,
+                           stdin=open(os.devnull),
+                           stdout=open(os.devnull, 'w'),
+                           stderr=subprocess.STDOUT)
+
+    # wait a second for openocd warm up.
+    OPENOCD_PID = openocd.pid
+    time.sleep(1)
+    openocd.poll()
+    if openocd.returncode != None:
+        # it will be None when running
+        print("openocd is occupied, please check openocd process")
+        print("exit !")
+        os._exit(-1)
+
+    # turn on gdb
+    gdb_cmd = "{GDB} {EXECUTABLE}".format(
+                                        GDB=gdb_path,
+                                        EXECUTABLE=binary_path)
+    gdb = pexpect.spawn(gdb_cmd, encoding='utf-8')
+    GDB_PID = gdb.pid
+    # connect gdb to openocd
+    gdb.expect("(gdb)")
+    gdb.sendline("set remotetimeout 240")
+    gdb.expect("(gdb)")
+    gdb.sendline("target extended-remote localhost:%s"%gdb_port_number)
+    # load
+    gdb.expect("(gdb)")
+    gdb.sendline("monitor reset halt")
+    gdb.expect("(gdb)")
+    gdb.sendline("monitor flash protect 0 64 last off")
+    gdb.expect("(gdb)")
+    if debug == True:
+        print("monitor flash protect 0 64 last off OK")
+    gdb.sendline("load")
+    gdb.expect("(gdb)")
+    if debug == True:
+        print("load OK !")
+    breakpoint_list = ["exit", "metal_shutdown", "early_trap_vector"]
+    for a_bp in breakpoint_list:
+        gdb.sendline("hb *%s"%a_bp)
+        gdb.expect("Hardware assisted breakpoint.*at")
+        if debug == True:
+            print("setting %s as bp OK!"%a_bp)
+
+    gdb.sendline("continue")
+    if debug == True:
+        print("start to run")
+
+    # get ret code
+    def get_val(reg_name, digit='d'):
+        '''
+        digit:
+            d: decimal
+            x: hexadecimal
+        '''
+        if digit == 'x':
+            gdb.sendline("p/x %s" % reg_name)
+        else:
+            gdb.sendline("p %s" % reg_name)
+        gdb.expect("\$\\d* = .*\r")
+        val = parse_val(gdb.after, digit)
+        return val
+
+    gdb.expect(["Breakpoint .* in \S* \(", "Breakpoint .* at"], timeout=timeout)
+    hit_str = gdb.after
+    if debug == True:
+        print("hit_str: %s"%(hit_str))
+    hit_func = hit_str.split(" ")[4]
+    if debug == True:
+        print("hit_func: %s"%(hit_func))
+
+    if "early_trap_vector" in hit_func:
+        print("Hit early_trap_vector, some thing wrong.")
+        mcause = get_val("$mcause")
+        mepc = get_val("$mepc")
+        mtval = get_val("$mtval")
+        print ("$mcause = %d" % mcause)
+        print ("$mepc = 0x%x" % mepc)
+        print ("$mtval = 0x%x" % mtval)
+        rv = -1
+        HIT_EXIT_FUNC = True
+    elif "metal_shutdown" in hit_func:
+        print("metal_shutdown!")
+        rv = -1
+        HIT_EXIT_FUNC = True
+    else:
+        rv = get_val("$a0")
+        HIT_EXIT_FUNC = True
+
+    RET_CODE = rv
+    print("return code: %d"%rv)
+    mvendorid = get_val("$mvendorid")
+    marchid = get_val("$marchid", digit='x')
+    mimpid = get_val("$mimpid")
+    print ("$mvendorid = 0x%x" % mvendorid)
+    print ("$marchid = %d" % marchid)
+    print ("$mimpid = 0x%x" % mimpid)
+
+    # wait for output
+    receive_t.join(timeout=timeout)
+    if receive_t.is_alive() == True:
+        print("exceed timeout (%s). Try to clean. "%timeout)
+
+    # kill gdb & openocd
+    kill_qemu_and_openocd_sig_handler()
+
+def main(sys_args):
+    global HIT_EXCEPTION
+    if sys_args["debug"] == True:
+        print("system arguments:")
+        print(sys_args)
+    signal.signal(signal.SIGINT, handle_ctrlc)
+    # run binary
+    try:
+        run_a_binary(sys_args)
+    except Exception as e:
+        HIT_EXCEPTION = True
+        print("catch exception: %s"%str(e))
+        print("try to clean ......")
+        kill_qemu_and_openocd_sig_handler()
+    # get output
+
+def handle_arguments():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--timeout', type=float, help="timeout", default=60.0)
+    parser.add_argument('--tty', type=str, required=True,
+                        help='tty string, ex: /dev/ttyUSB1',)
+    parser.add_argument('--executable', type=str, help='executable file',
+                        required=True)
+    parser.add_argument('--gdb', type=str, help='path to gdb',
+                        required=True)
+    parser.add_argument('--openocd', type=str, help='path to openocd',
+                        required=True)
+    parser.add_argument('--openocd-config', type=str, help='config of openocd',
+                        required=True)
+    parser.add_argument('--debug', action='store_true', default=False,
+                        help='debug mode for arty-run')
+    opts = vars(parser.parse_args())
+    return opts
+
+def parse_val(line, digit='d'):
+    '''
+    digit:
+        d: decimal
+        x: hexadecimal
+    '''
+    raw_rv = line.strip()
+    val = raw_rv.split("=")[1].strip()
+    if digit == 'x':
+        rv = int(val, 16)
+    else:
+        rv = int(val)
+    return rv
+
+if __name__ == '__main__':
+    sys_args = handle_arguments()
+    main(sys_args)

@@ -1,0 +1,13 @@
+[submodule "sifive-gem5"]
+	path = sifive-gem5
+	url = git@github.com:sifive/sifive-gem5.git
+	branch = gem5-run
+[submodule "prebuilt/prebuilt-qemu"]
+	path = prebuilt/prebuilt-qemu
+	url = git@github.com:sifive/prebuilt-qemu.git
+[submodule "prebuilt/prebuilt-gdb"]
+	path = prebuilt/prebuilt-gdb
+	url = git@github.com:sifive/prebuilt-gdb.git
+[submodule "prebuilt/prebuilt-spike"]
+	path = prebuilt/prebuilt-spike
+	url = git@github.com:sifive/prebuilt-spike.git

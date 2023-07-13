@@ -1,0 +1,74 @@
+SRCTOP:={SRCTOP}
+CC:={CC}
+CFLAGS:={CFLAGS}
+SIM:={SIM}
+NODE:={NODE}
+LENGTH:={LENGTH}
+SEED:={SEED}
+ARCH:={ARCH}
+GEN_PATH:={GEN_PATH}
+GEN_PATTERN:={GEN_PATTERN}
+HAS_POLICY:={HAS_POLICY}
+
+include rules.mk
+
+GEN:=$(GEN_PATH)/$(GEN_PATTERN)
+
+SIM_LOGS:= $(addsuffix .log,$(TARGETS))
+SIM_1_LOGS:= $(addsuffix .1.log,$(TARGETS))
+
+ifeq ($(VERBOSE),)
+V:=@
+else
+V:=
+endif
+
+define cmd
+(set -x; $(1)) >>$@ 2>&1 \
+|| (echo $(2) >> $@ && exit 1)
+endef
+
+all:
+	-$(MAKE) -k run
+	$(MAKE) report
+	@echo "Test done"
+
+report: $(SIM_LOGS)
+	$(SRCTOP)/scripts/report
+
+clean:
+	rm -f *.c *.elf *.log *.dot
+
+run: $(SIM_LOGS)
+
+%.log: $(GEN)
+	$(V) \
+        if [ ! -f $(subst .log,.c,$@) ]; then \
+            echo "Gen testcase $(subst .log,,$@)"; \
+	    $(call cmd, $(GEN) \
+	                 --root=$(notdir $(basename $@)) \
+	                 --nodes-to-gen=$(NODE) \
+	                 --length=$(LENGTH) \
+	                 --dot=$(basename $@).dot \
+	                 --code=$(notdir $(basename $@)).c \
+	                 --seed=$(SEED) \
+	                 --march=$(ARCH) \
+	                 $(HAS_POLICY), "GEN FAIL") \
+        fi
+	$(V)echo "Compile $(subst .log,,$@)"
+	$(V)$(call cmd, \
+	      $(CC) $(CFLAGS) $(EXTRA_CFLAGS) \
+	      $(subst .log,.c,$@) \
+	      -o $(subst .log,.elf,$@) \
+	      , "COMPILE FAIL")
+	$(V)echo "Run $(subst .log,,$@)"
+	$(V)$(call cmd, \
+              $(SIM) $(subst .log,.elf,$@) \
+              , "RUN FAIL")
+
+$(GEN):
+ifeq ("$(wildcard $(GEN))","")
+	mkdir -p build
+	cd build && cmake $(SRCTOP)
+	cd build && $(MAKE)
+endif

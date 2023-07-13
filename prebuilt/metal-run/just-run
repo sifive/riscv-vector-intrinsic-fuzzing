@@ -1,0 +1,7 @@
+#! /usr/bin/env python3
+
+import sys
+from justRun import Main
+
+if __name__ == '__main__':
+    Main.main(sys.argv)
