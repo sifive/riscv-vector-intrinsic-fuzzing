@@ -56,3 +56,6 @@ CUSTOM_SCALAR_TYPE(Float64, float64_t, 64, FLOAT, 0, +20000000)
 // machine dependent
 CUSTOM_SCALAR_TYPE(IntXLen, ptrdiff_t, 32, SIGNED_INT, 0, 10000000)
 CUSTOM_SCALAR_TYPE(UIntXLen, size_t, 32, UNSIGNED_INT, 0, 10000000)
+
+// rounding mode
+CUSTOM_SCALAR_TYPE(UIntStatus, uint8_t, 8, CONSTANT_INT, 0, 3) 

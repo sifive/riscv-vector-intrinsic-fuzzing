@@ -34,6 +34,7 @@ def report():
       elif line.endswith("fail") :
         failed_lists["COMPUTE"].append(testname)
       else:
+        print(line)
         print ("Unknown fail type for %s ???" % log)
     elif line.endswith("pass"):
       passed_case += 1

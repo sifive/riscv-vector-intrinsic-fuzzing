@@ -277,7 +277,7 @@ TEST(EnumerateLmul, AddVV8) {
         OneDInt8, graph, "B_" + std::string(LMUL_STR(lmul)), length, lmul));
     auto c = static_cast<OneDInt8Val *>(graph.getNewValue(
         OneDInt8, "output_" + std::string(LMUL_STR(lmul)), length, lmul));
-    auto op = graph.getNewOperator(AddVV8VInt8,
+    auto op = graph.getNewOperator(AddVV8VInt8VIVI,
                                    "op_" + std::string(LMUL_STR(lmul)), lmul);
     op->addInput(0, a);
     op->addInput(1, b);

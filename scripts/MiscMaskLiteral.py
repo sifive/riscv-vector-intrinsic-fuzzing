@@ -50,9 +50,9 @@ def create_cpop_op(op_type, op_id, op_attr, output_type, input_num, input_types)
   ret += cpop_literal_start0 + op_type + cpop_literal_start1
   for i in range(input_num) :
     var = chr(ord('a') + i)
-    ret += "  auto " + var + " = static_cast<RIF::" + input_types[i] + "Val *>(op->inputs[" + str(i) + "]);\n"
+    ret += "  auto " + var + " = static_cast<RIF::" + input_types[i] + "Val *>(op->inputs[" + str(i) + "]); // scripts/MiscMaskLiteral.py create_cpop_op\n"
   var = chr(ord('a') + input_num)
-  ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->outputs[0]);\n"
+  ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->outputs[0]); // scripts/MiscMaskLiteral.py create_cpop_op\n"
   if "MaskedOperation" in op_attr :
     ret += cpop_literal_mask_body + include_literal("v" + op_id + ".h") + cpop_literal_mask_end  
   else :
@@ -109,9 +109,9 @@ def create_vfirst_op(op_type, op_id, op_attr, output_type, input_num, input_type
   ret += vfirst_literal_start0 + op_type + vfirst_literal_start1
   for i in range(input_num) :
     var = chr(ord('a') + i)
-    ret += "  auto " + var + " = static_cast<RIF::" + input_types[i] + "Val *>(op->inputs[" + str(i) + "]);\n"
+    ret += "  auto " + var + " = static_cast<RIF::" + input_types[i] + "Val *>(op->inputs[" + str(i) + "]); // scripts/MiscMaskLiteral.py create_vfirst_op\n"
   var = chr(ord('a') + input_num)
-  ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->outputs[0]);\n"
+  ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->outputs[0]); // scripts/MiscMaskLiteral.py create_vfirst_op\n"
   if "MaskedOperation" in op_attr :
     ret += vfirst_literal_mask_body + include_literal("v" + op_id + ".h") + vfirst_literal_mask_end  
   else :
@@ -145,10 +145,10 @@ msbf_msif_msof_literal_nonmask_end = '''
 msbf_msif_msof_literal_mask_body = '''
   auto length = a->length;
 
-  auto dataM = getRawPointer(a);
-  auto dataMO = getRawPointer(b);
-  auto dataA = getRawPointer(c);
-  auto dataOut = getRawPointer(d);
+  auto dataM = getRawPointer(a);  // mask
+  auto dataA = getRawPointer(b);  // operand
+  auto dataOut = getRawPointer(c);  // result
+  auto dataMO = getRawPointer(d);  // vd default
 
   auto sew = op->typeInfo->sew;
 
@@ -210,10 +210,12 @@ def create_msbf_msif_msof_op(op_type, op_id, op_attr, output_type, input_num, in
   ret += msbf_msif_msof_literal_start0 + op_type + msbf_msif_msof_literal_start1
   for i in range(input_num) :
     var = chr(ord('a') + i)
-    ret += "  auto " + var + " = static_cast<RIF::" + input_types[i] + "Val *>(op->inputs[" + str(i) + "]);\n"
+    ret += "  auto " + var + " = static_cast<RIF::" + input_types[i] + "Val *>(op->inputs[" + str(i) + "]); // scripts/MiscMaskLiteral.py create_msbf_msif_msof_op\n"
   var = chr(ord('a') + input_num)
-  ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->outputs[0]);\n"
+  ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->outputs[0]); // scripts/MiscMaskLiteral.py create_msbf_msif_msof_op\n"
   if "MaskedOperation" in op_attr :
+    var = chr(ord('a') + input_num + 1)
+    ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->inputs[" + str(input_num) + "]); // scripts/MiscMaskLiteral.py create_msbf_msif_msof_op \n"
     if "MaskAgnostic" in op_attr :
       ret += msbf_msif_msof_ma_literal_mask_body + include_literal("v" + op_id + ".h") + msbf_msif_msof_ma_literal_mask_end
     else :
@@ -285,6 +287,7 @@ iota_ta_literal_nonmask_end = '''
 '''
 
 iota_literal_mask_body = '''
+  //  iota_literal_mask_body
   auto length = a->length;
 
   auto dataM = getRawPointer(a);
@@ -389,10 +392,12 @@ def create_iota_op(op_type, op_id, op_attr, output_type, input_num, input_types)
   ret += iota_literal_start0 + op_type + iota_literal_start1
   for i in range(input_num) :
     var = chr(ord('a') + i)
-    ret += "  auto " + var + " = static_cast<RIF::" + input_types[i] + "Val *>(op->inputs[" + str(i) + "]);\n"
+    ret += "  auto " + var + " = static_cast<RIF::" + input_types[i] + "Val *>(op->inputs[" + str(i) + "]); // scripts/MiscMaskLiteral.py create_iota_op\n"
   var = chr(ord('a') + input_num)
-  ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->outputs[0]);\n"
+  ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->outputs[0]); // scripts/MiscMaskLiteral.py create_iota_op\n"
   if "MaskedOperation" in op_attr :
+    var = chr(ord('a') + input_num + 1)
+    ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->inputs[" + str(input_num) + "]); // scripts/MiscMaskLiteral.py create_iota_op \n"
     if "TailAgnostic" in op_attr and "MaskAgnostic" in op_attr : # tama
       ret += iota_tama_literal_mask_body + include_literal("v" + op_id + ".h") + iota_tama_literal_mask_end
     elif "TailAgnostic" in op_attr and "MaskUndisturbed" in op_attr : # tamu
@@ -461,9 +466,9 @@ id_tu_literal_nonmask_end = '''
 id_literal_mask_body = '''
   auto length = a->length;
 
-  auto dataM = getRawPointer(a);
-  auto dataMO = getRawPointer(b);
-  auto dataOut = getRawPointer(c);
+  auto dataM = getRawPointer(a); //mask
+  auto dataMO = getRawPointer(b);  // vd default
+  auto dataOut = getRawPointer(c); // vd
 
   auto sew = op->typeInfo->sew;
 
@@ -544,10 +549,12 @@ def create_id_op(op_type, op_id, op_attr, output_type, input_num, input_types) :
   ret += id_literal_start0 + op_type + id_literal_start1
   for i in range(input_num) :
     var = chr(ord('a') + i)
-    ret += "  auto " + var + " = static_cast<RIF::" + input_types[i] + "Val *>(op->inputs[" + str(i) + "]);\n"
+    ret += "  auto " + var + " = static_cast<RIF::" + input_types[i] + "Val *>(op->inputs[" + str(i) + "]); // scripts/MiscMaskLiteral.py create_id_op\n"
   var = chr(ord('a') + input_num)
-  ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->outputs[0]);\n"
+  ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->outputs[0]); // scripts/MiscMaskLiteral.py create_id_op\n"
   if "MaskedOperation" in op_attr :
+    var = chr(ord('a') + input_num + 1)
+    ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->inputs[" + str(input_num) + "]); // masked op default vd scripts/MiscMaskLiteral.py create_id_op \n"
     if "TailAgnostic" in op_attr and "MaskAgnostic" in op_attr : # tama
       ret += id_tama_literal_mask_body + include_literal("v" + op_id + ".h") + id_tama_literal_mask_end
     elif "TailAgnostic" in op_attr and "MaskUndisturbed" in op_attr : # tamu

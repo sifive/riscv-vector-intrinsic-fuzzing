@@ -18,6 +18,7 @@ enum TypeClass {
   FLOAT,
   BOOL,
   NumberOfTypeClasses,
+  CONSTANT_INT,
 };
 
 #define TYPE_CLASS_STR(TC)                                                     \
@@ -25,6 +26,7 @@ enum TypeClass {
   : (TC) == UNSIGNED_INT ? "uint"                                              \
   : (TC) == FLOAT        ? "float"                                             \
   : (TC) == BOOL         ? "bool"                                              \
+  : (TC) == CONSTANT_INT ? "const_int"                                         \
                  : (assert("Unknown type class!?"), "<SOME_THING_WRONG>")
 
 #define TYPE_CLASS_SHORT_STR(TC)                                               \
@@ -57,7 +59,7 @@ enum LmulType {
 
 class SewType {
 public:
-  enum class Value { e8, e16, e32, e64, NumberOfSews };
+  enum class Value {e8, e16, e32, e64, NumberOfSews };
 
   explicit SewType(int);
   explicit SewType(Value);
@@ -122,9 +124,9 @@ private:
                             sew.to_string()),
         shortVectorTypeName((std::string(TYPE_CLASS_SHORT_STR(typeClass)) +
                              sew.to_string() + std::string(LMUL_STR(lmul)))),
-        setvlTypeName("vsetvl_e" + sew.to_string() +
+        setvlTypeName("__riscv_vsetvl_e" + sew.to_string() +
                       std::string(LMUL_STR(lmul))),
-        setvlmaxTypeName("vsetvlmax_e" + sew.to_string() +
+        setvlmaxTypeName("__riscv_vsetvlmax_e" + sew.to_string() +
                          std::string(LMUL_STR(lmul))) {}
 };
 

@@ -8,11 +8,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: DoozyX/clang-format-lint-action@v0.12
+    - uses: DoozyX/clang-format-lint-action@v0.18.2
       with:
         source: '.'
         extensions: 'hpp,cpp'
-        clangFormatVersion: 12
+        clangFormatVersion: 16
         inplace: True
     - uses: EndBug/add-and-commit@v4
       with:

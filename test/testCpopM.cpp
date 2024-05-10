@@ -11,7 +11,7 @@ TEST(Golden, CpopMSUInt32VB) {
            1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1};
   uint32_t golden = 37;
   NONMASK_V_GEN_TEST(OneDBool, ScalarUInt32, NONMASK_V_VALUE_INIT,
-                     CpopMSUInt32VB);
+                     CpopM0SUIntXLenVB_m_b32);
   auto computed = getRawPointer(b);
   EXPECT_EQ(*computed, golden);
 }
@@ -28,7 +28,7 @@ TEST(Golden, CpopMSUInt32VBVB_m) {
   uint32_t golden = 28;
   MASK_V_NO_MASKEDOFF_GEN_TEST(OneDBool, OneDBool, ScalarUInt32,
                                MASK_V_NO_MASKEDOFF_VALUE_INIT,
-                               CpopMSUInt32VBVB_m);
+                               CpopM0SUIntXLenVBVB_m);
   auto computed = getRawPointer(c);
   EXPECT_EQ(*computed, golden);
 }

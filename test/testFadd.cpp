@@ -29,18 +29,18 @@ TEST(Golden, FaddVV64VFloat64VFVF) {
 
 TEST(Golden, FaddVF16VFloat16VFSF) {
   NONMASK_VV_VX_GEN_TEST(OneDFloat16, ScalarFloat16, OneDFloat16,
-                         NONMASK_FP_VX_VALUE_INIT(16), FaddVF16VFloat16VFSF);
+                         NONMASK_FP_VX_VALUE_INIT(16), FaddVF16VFloat16VFSF16);
   EXPECT_EQ(verifyResult(c, goldenVF), true);
 }
 
 TEST(Golden, FaddVF32VFloat32VFSF) {
   NONMASK_VV_VX_GEN_TEST(OneDFloat32, ScalarFloat32, OneDFloat32,
-                         NONMASK_FP_VX_VALUE_INIT(32), FaddVF32VFloat32VFSF);
+                         NONMASK_FP_VX_VALUE_INIT(32), FaddVF32VFloat32VFSF32);
   EXPECT_EQ(verifyResult(c, goldenVF), true);
 }
 
 TEST(Golden, FaddVF64VFloat64VFSF) {
   NONMASK_VV_VX_GEN_TEST(OneDFloat64, ScalarFloat64, OneDFloat64,
-                         NONMASK_FP_VX_VALUE_INIT(64), FaddVF64VFloat64VFSF);
+                         NONMASK_FP_VX_VALUE_INIT(64), FaddVF64VFloat64VFSF64);
   EXPECT_EQ(verifyResult(c, goldenVF), true);
 }
