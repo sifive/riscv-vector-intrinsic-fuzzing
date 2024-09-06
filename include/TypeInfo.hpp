@@ -122,9 +122,9 @@ private:
                             sew.to_string()),
         shortVectorTypeName((std::string(TYPE_CLASS_SHORT_STR(typeClass)) +
                              sew.to_string() + std::string(LMUL_STR(lmul)))),
-        setvlTypeName("vsetvl_e" + sew.to_string() +
+        setvlTypeName("__riscv_vsetvl_e" + sew.to_string() +
                       std::string(LMUL_STR(lmul))),
-        setvlmaxTypeName("vsetvlmax_e" + sew.to_string() +
+        setvlmaxTypeName("__riscv_vsetvlmax_e" + sew.to_string() +
                          std::string(LMUL_STR(lmul))) {}
 };
 
