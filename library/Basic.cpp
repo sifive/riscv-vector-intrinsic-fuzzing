@@ -1,6 +1,11 @@
 // Basic.cpp
 /*
 Implementations.
+
+The MACRO `CUSTOM_OP_TYPE` declared under `include/CustomOperator.def'
+will be fed into this file for enum definition,
+include/Operator.hpp for derived class definition
+library/Operator.cpp for derived class member function implementation.
 */
 #include "Basic.hpp"
 
