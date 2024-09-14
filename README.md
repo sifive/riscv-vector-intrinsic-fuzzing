@@ -37,10 +37,10 @@ own simulator (QEMU), please add `${PATH_TO_QEMU_BINARY} ${CPU_CONFIGS}` of how 
 
 
 ```
-$ git clone https://github.com/sifive/rvv-intrinsic-fuzzing
+$ git clone https://github.com/sifive/riscv-vector-intrinsic-fuzzing
 $ mkdir test
 $ cd test
-$ ../rvv-intrinsic-fuzzing/rif-test --cc=<YOUR-COMPILER-PATH>
+$ ../rif-test --cc=<YOUR-COMPILER-PATH>
 $ make
 ```
 
@@ -49,8 +49,8 @@ $ make
 ### How To Build?
 
 ```
-$ git clone https://github.com/sifive/rvv-intrinsic-fuzzing
-$ cd rvv-intrinsic-fuzzing
+$ git clone https://github.com/sifive/riscv-vector-intrinsic-fuzzing
+$ cd riscv-vector-intrinsic-fuzzing
 $ mkdir build; cd build
 $ cmake ..
 $ make
