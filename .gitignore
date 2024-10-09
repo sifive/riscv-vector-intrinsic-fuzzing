@@ -3,4 +3,5 @@ build/
 .cache/
 include/autogen
 include/AutoGenComputeOp.h
+include/CustomOperator.def
 *.pyc
