@@ -224,23 +224,23 @@ typedef unsigned __int128 uint128_t;
   }
 
 #define VI_VV_MERGE_LOOP(BODY)                                                 \
-  auto use_first = dataA[i];                                                   \
-  auto vs2 = dataB[i];                                                         \
-  auto vs1 = dataC[i];                                                         \
+  auto use_first = dataC[i];                                                   \
+  auto vs2 = dataA[i];                                                         \
+  auto vs1 = dataB[i];                                                         \
   auto &vd = dataOut[i];                                                       \
   BODY
 
 #define VI_VX_MERGE_LOOP(BODY)                                                 \
-  auto use_first = dataA[i];                                                   \
-  auto vs2 = dataB[i];                                                         \
-  auto rs1 = *dataC;                                                           \
+  auto use_first = dataC[i];                                                   \
+  auto vs2 = dataA[i];                                                         \
+  auto rs1 = *dataB;                                                           \
   auto &vd = dataOut[i];                                                       \
   BODY
 
 #define VI_VF_MERGE_LOOP(BODY)                                                 \
-  bool use_first = dataA[i];                                                   \
-  RIF::RawDatumOperand vs2(dataB[i]);                                          \
-  RIF::RawDatumOperand rs1(*dataC);                                            \
+  bool use_first = dataC[i];                                                   \
+  RIF::RawDatumOperand vs2(dataA[i]);                                          \
+  RIF::RawDatumOperand rs1(*dataB);                                            \
   RIF::RawDatumOperand vd;                                                     \
   BODY;                                                                        \
   dataOut[i] = vd;

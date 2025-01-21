@@ -16,7 +16,7 @@ namespace RIF {
 
 std::string GraphVizFilename;
 std::string CCodeFilename;
-std::string InitialRootName = "AddVV32VInt32";
+std::string InitialRootName = "AddVV32VInt32VIVI";
 uint32_t InitialLength = 500;
 uint32_t InitialSeed = 0xdeadbeef;
 uint32_t NodesToGenerate = 5;

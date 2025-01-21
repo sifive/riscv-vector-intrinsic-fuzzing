@@ -45,7 +45,7 @@ TEST(EnumerateLmul, AddVV8) {
 
   const SewType operatorSew = SewType{e32};
   for (LmulType lmul : TypeInfo::validSewLmul[operatorSew]) {
-    auto op = graph.getNewOperator(AddVV32VInt32_m,
+    auto op = graph.getNewOperator(AddVV32VInt32VBVIVI_m,
                                    "op_" + std::string(LMUL_STR(lmul)), lmul);
 
     fillOperatorWithInitializedValue(graph, op, length);

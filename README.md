@@ -4,6 +4,36 @@ This repository aims to create fuzz testing for the RVV C intrinsic.
 
 ## Usage
 
+### How To Build?
+
+```
+$ git clone https://github.com/sifive/riscv-vector-intrinsic-fuzzing
+$ cd riscv-vector-intrinsic-fuzzing
+$ cd test/build
+$ cmake ../..
+$ make
+$ ./tool/random_gen --help
+Usage: random_gen [OPTION...]
+
+  -c, --code=FILE            C code file, default filename: 'output.c'
+  -d, --dot=FILE             Graphviz visualization file, default filename is
+                             'output.dot'
+  -h                         Give this help list
+  -m, --march=ARCH_STRING    Arch string for testing, default is rv64gcv
+  -n, --nodes-to-gen=NODES_TO_GEN
+                             The number of nodes to generate for the graph.
+  -r, --root=OPERATOR_ENUM   Initial node for the graph generation, default
+                             root is 'AddVV32'
+  -s, --seed=RANDOM_SEED     Seed for random number generator, default seed is
+                             '0xdeadbeef'
+  -v, --verbose              Produce verbose output
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+
+Mandatory or optional arguments to long options are also mandatory or optional
+for any corresponding short options.
+```
+
 ### How To Use?
 
 `rif-test` is the current driver to fuzz all existing intrinsics in `include/CustomOperator.def`.
@@ -74,4 +104,3 @@ Usage: random_gen [OPTION...]
 
 Mandatory or optional arguments to long options are also mandatory or optional
 for any corresponding short options.
-```

@@ -10,21 +10,21 @@ std::vector<int> dataMO = {100, 99, 98, 97, 96, 95, 94, 93, 92, 91};
 
 TEST(Golden, SraVV8VInt8_m) {
   MASK_VV_VX_GEN_TEST(OneDBool, OneDInt8, OneDInt8, OneDUInt8, OneDInt8,
-                      MASK_VV_VALUE_INIT, SraVV8VInt8_m);
+                      MASK_VV_VALUE_INIT, SraVV8VInt8VBVIVU_m);
   EXPECT_EQ(verifyResult(output, golden), true);
 }
 TEST(Golden, SraVV16VInt16_m) {
   MASK_VV_VX_GEN_TEST(OneDBool, OneDInt16, OneDInt16, OneDUInt16, OneDInt16,
-                      MASK_VV_VALUE_INIT, SraVV16VInt16_m);
+                      MASK_VV_VALUE_INIT, SraVV16VInt16VBVIVU_m);
   EXPECT_EQ(verifyResult(output, golden), true);
 }
 TEST(Golden, SraVV32VInt32_m) {
   MASK_VV_VX_GEN_TEST(OneDBool, OneDInt32, OneDInt32, OneDUInt32, OneDInt32,
-                      MASK_VV_VALUE_INIT, SraVV32VInt32_m);
+                      MASK_VV_VALUE_INIT, SraVV32VInt32VBVIVU_m);
   EXPECT_EQ(verifyResult(output, golden), true);
 }
 TEST(Golden, SraVV64VInt64_m) {
   MASK_VV_VX_GEN_TEST(OneDBool, OneDInt64, OneDInt64, OneDUInt64, OneDInt64,
-                      MASK_VV_VALUE_INIT, SraVV64VInt64_m);
+                      MASK_VV_VALUE_INIT, SraVV64VInt64VBVIVU_m);
   EXPECT_EQ(verifyResult(output, golden), true);
 }

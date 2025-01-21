@@ -13,41 +13,41 @@ std::vector<int> dataMaskedOff = {100, 99, 98, 97, 96, 95, 94, 93};
 TEST(Golden, FaddVV16VFloat16VBVFVFVF_m) {
   MASK_VV_VX_GEN_TEST(OneDBool, OneDFloat16, OneDFloat16, OneDFloat16,
                       OneDFloat16, MASK_FP_VV_VALUE_INIT(16),
-                      FaddVV16VFloat16VBVFVFVF_m);
+                      FaddVV16VFloat16VBVFVF_m);
   verifyResult(output, goldenVV);
 }
 
 TEST(Golden, FaddVV32VFloat32VBVFVFVF_m) {
   MASK_VV_VX_GEN_TEST(OneDBool, OneDFloat32, OneDFloat32, OneDFloat32,
                       OneDFloat32, MASK_FP_VV_VALUE_INIT(32),
-                      FaddVV32VFloat32VBVFVFVF_m);
+                      FaddVV32VFloat32VBVFVF_m);
   verifyResult(output, goldenVV);
 }
 
 TEST(Golden, FaddVV64VFloat64VBVFVFVF_m) {
   MASK_VV_VX_GEN_TEST(OneDBool, OneDFloat64, OneDFloat64, OneDFloat64,
                       OneDFloat64, MASK_FP_VV_VALUE_INIT(64),
-                      FaddVV64VFloat64VBVFVFVF_m);
+                      FaddVV64VFloat64VBVFVF_m);
   verifyResult(output, goldenVV);
 }
 
 TEST(Golden, FaddVF16VFloat16VBVFVFSF_m) {
   MASK_VV_VX_GEN_TEST(OneDBool, OneDFloat16, OneDFloat16, ScalarFloat16,
                       OneDFloat16, MASK_FP_VF_VALUE_INIT(16),
-                      FaddVF16VFloat16VBVFVFSF_m);
+                      FaddVF16VFloat16VBVFSF16_m);
   verifyResult(output, goldenVF);
 }
 
 TEST(Golden, FaddVF32VFloat32VBVFVFSF_m) {
   MASK_VV_VX_GEN_TEST(OneDBool, OneDFloat32, OneDFloat32, ScalarFloat32,
                       OneDFloat32, MASK_FP_VF_VALUE_INIT(32),
-                      FaddVF32VFloat32VBVFVFSF_m);
+                      FaddVF32VFloat32VBVFSF32_m);
   verifyResult(output, goldenVF);
 }
 
 TEST(Golden, FaddVF64VFloat64VBVFVFSF_m) {
   MASK_VV_VX_GEN_TEST(OneDBool, OneDFloat64, OneDFloat64, ScalarFloat64,
                       OneDFloat64, MASK_FP_VF_VALUE_INIT(64),
-                      FaddVF64VFloat64VBVFVFSF_m);
+                      FaddVF64VFloat64VBVFSF64_m);
   verifyResult(output, goldenVF);
 }

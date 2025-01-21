@@ -20,7 +20,7 @@ def gen_makefile(opts, output_file):
   with open(makefile_template, mode='r') as f:
     template = f.read()
 
-  arch_flags = "-march=%s -mabi=%s -menable-experimental-extensions " %(opts.arch, opts.abi)
+  arch_flags = "-march=%s -mabi=%s " %(opts.arch, opts.abi)
   final_cflags = arch_flags + " -static " + opts.cflags
 
   output = template.format(

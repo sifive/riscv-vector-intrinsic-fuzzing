@@ -1,6 +1,7 @@
 vxm_literal_start0 = "void compute"
 vxm_literal_start1 = "Op(RIF::OperatorBase *op) {\n"
 vxm_literal_body = '''
+  // script/VXMLiteral.py vxm_literal_body
   if (op->opAttr & RIF::MergeOperation)
     assert(a->length == b->length && c->length == 1 && a->length == d->length);
   else
@@ -84,9 +85,9 @@ def create_vxm_op(op_type, op_id, op_attr, output_type, input_num, input_types) 
   ret += vxm_literal_start0 + op_type + vxm_literal_start1
   for i in range(input_num) :
     var = chr(ord('a') + i)
-    ret += "  auto " + var + " = static_cast<RIF::" + input_types[i] + "Val *>(op->inputs[" + str(i) + "]);\n"
+    ret += "  auto " + var + " = static_cast<RIF::" + input_types[i] + "Val *>(op->inputs[" + str(i) + "]); // scripts/VXMLiteral.py create_vxm_op \n"
   var = chr(ord('a') + input_num)
-  ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->outputs[0]);\n"
+  ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->outputs[0]); // scripts/VXMLiteral.py create_vxm_op \n"
   if "TailUndisturbed" in op_attr :
     if "MergeOperation" in op_attr :
       ret += merge_vxm_tu_literal_body + include_literal("v" + op_id + ".h") + vxm_tu_literal_end
