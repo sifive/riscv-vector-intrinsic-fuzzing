@@ -25,24 +25,13 @@ struct OpDefinition {
   CustomValType outputType;
   int numOfInputs;
   std::vector<CustomValType> inputTypes;
-  OpDefinition(CustomValType opType, 
-               std::string &&opTypeStr,
-               std::string &&opId, 
-               int sew, 
-               TypeClass typeClass,
-               uint32_t opAttr, 
-               CustomValType outputType, 
-               int numOfInputs,
+  OpDefinition(CustomValType opType, std::string &&opTypeStr,
+               std::string &&opId, int sew, TypeClass typeClass,
+               uint32_t opAttr, CustomValType outputType, int numOfInputs,
                std::vector<CustomValType> inputTypes)
-      : opType(opType), 
-        opTypeStr(std::move(opTypeStr)), 
-        opId(std::move(opId)),
-        sew(sew), 
-        typeClass(typeClass), 
-        opAttr(opAttr), 
-        outputType(outputType),
-        numOfInputs(numOfInputs), 
-        inputTypes(inputTypes) {}
+      : opType(opType), opTypeStr(std::move(opTypeStr)), opId(std::move(opId)),
+        sew(sew), typeClass(typeClass), opAttr(opAttr), outputType(outputType),
+        numOfInputs(numOfInputs), inputTypes(inputTypes) {}
 };
 
 bool Graph::isConstructedUseDefineCandidate = false;
@@ -294,11 +283,9 @@ void Graph::generateCCode(std::ostream &os, uint32_t seed) {
   emitHeader(os);
 
   // declare values in global (avoid stack overflow)
-  for (auto value : values)
-    {
-      value->generateCCode(os);
-    }
-    
+  for (auto value : values) {
+    value->generateCCode(os);
+  }
 
   // generate function calls for the operators
   for (auto id : ordering) {
