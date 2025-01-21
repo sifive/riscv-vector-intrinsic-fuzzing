@@ -17,7 +17,8 @@ TEST(Golden, MsbfMVBoolVB_0) {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-  NONMASK_V_GEN_TEST(OneDBool, OneDBool, NONMASK_V_VALUE_INIT, MsbfM0VBoolVB_m_b8);
+  NONMASK_V_GEN_TEST(OneDBool, OneDBool, NONMASK_V_VALUE_INIT,
+                     MsbfM0VBoolVB_m_b8);
   EXPECT_EQ(verifyResult(b, golden), true);
 }
 TEST(Golden, MsbfMVBoolVB_1) {
@@ -32,7 +33,8 @@ TEST(Golden, MsbfMVBoolVB_1) {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-  NONMASK_V_GEN_TEST(OneDBool, OneDBool, NONMASK_V_VALUE_INIT, MsbfM0VBoolVB_m_b16);
+  NONMASK_V_GEN_TEST(OneDBool, OneDBool, NONMASK_V_VALUE_INIT,
+                     MsbfM0VBoolVB_m_b16);
   EXPECT_EQ(verifyResult(b, golden), true);
 }
 TEST(Golden, MsbfMVBoolVB_2) {
@@ -48,7 +50,8 @@ TEST(Golden, MsbfMVBoolVB_2) {
       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,
   };
 
-  NONMASK_V_GEN_TEST(OneDBool, OneDBool, NONMASK_V_VALUE_INIT, MsbfM0VBoolVB_m_b32);
+  NONMASK_V_GEN_TEST(OneDBool, OneDBool, NONMASK_V_VALUE_INIT,
+                     MsbfM0VBoolVB_m_b32);
   EXPECT_EQ(verifyResult(b, golden), true);
 }
 

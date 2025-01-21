@@ -62,7 +62,7 @@ DataTypeEnum getDataTypeEnum(const char *dataTypeString) {
     return DataTypeEnum::Size_t;
   else
     std::cerr << "Unhandled type: " << dataTypeString << std::endl;
-    assert(false && "Unhandled type");
+  assert(false && "Unhandled type");
 }
 
 bool isIntegral(DataTypeEnum dt) {
@@ -95,13 +95,9 @@ bool isNarrowingValue(ValueBase *x, ValueBase *y) {
   return x->typeInfo->sew.to_int() * 2 == y->typeInfo->sew.to_int();
 }
 
-bool isFRM(OperatorBase *op){
-  return op->opAttr & FRM;
-}
+bool isFRM(OperatorBase *op) { return op->opAttr & FRM; }
 
-bool isVXRM(OperatorBase *op){
-  return op->opAttr & VXRM;
-}
+bool isVXRM(OperatorBase *op) { return op->opAttr & VXRM; }
 
 bool hasMask(const OperatorBase *op) { return op->opAttr & MaskedOperation; }
 

@@ -25,24 +25,13 @@ struct OpDefinition {
   CustomValType outputType;
   int numOfInputs;
   std::vector<CustomValType> inputTypes;
-  OpDefinition(CustomValType opType, 
-               std::string &&opTypeStr,
-               std::string &&opId, 
-               int sew, 
-               TypeClass typeClass,
-               uint32_t opAttr, 
-               CustomValType outputType, 
-               int numOfInputs,
+  OpDefinition(CustomValType opType, std::string &&opTypeStr,
+               std::string &&opId, int sew, TypeClass typeClass,
+               uint32_t opAttr, CustomValType outputType, int numOfInputs,
                std::vector<CustomValType> inputTypes)
-      : opType(opType), 
-        opTypeStr(std::move(opTypeStr)), 
-        opId(std::move(opId)),
-        sew(sew), 
-        typeClass(typeClass), 
-        opAttr(opAttr), 
-        outputType(outputType),
-        numOfInputs(numOfInputs), 
-        inputTypes(inputTypes) {}
+      : opType(opType), opTypeStr(std::move(opTypeStr)), opId(std::move(opId)),
+        sew(sew), typeClass(typeClass), opAttr(opAttr), outputType(outputType),
+        numOfInputs(numOfInputs), inputTypes(inputTypes) {}
 };
 
 bool Graph::isConstructedUseDefineCandidate = false;
@@ -241,45 +230,29 @@ void Graph::emitHeader(std::ostream &os) {
         "0x007FFFFF))\n";
   os << "#define isNaNF64UI( a ) (((~(a) & UINT64_C( 0x7FF0000000000000 )) == "
         "0) && ((a) & UINT64_C( 0x000FFFFFFFFFFFFF )))\n";
-  std::random_device rd;  // ramdom seed
-  std::mt19937 gen(rd()); // Pseudorandom number generator
+  std::random_device rd;                       // ramdom seed
+  std::mt19937 gen(rd());                      // Pseudorandom number generator
   std::uniform_int_distribution<> dist(0, 19); // scale [0, 19]
 
   int random_number = dist(gen);
-  if (random_number % 4 == 0)
-  {
+  if (random_number % 4 == 0) {
     os << "#define vxrm 0\n";
-  }
-  else if (random_number % 4 == 1)
-  {
+  } else if (random_number % 4 == 1) {
     os << "#define vxrm 1\n";
-  }
-  else if (random_number % 4 == 2)
-  {
+  } else if (random_number % 4 == 2) {
     os << "#define vxrm 2\n";
-  }
-  else
-  {
+  } else {
     os << "#define vxrm 3\n";
   }
-  if (random_number % 5 == 0)
-  {
+  if (random_number % 5 == 0) {
     os << "#define frm 0\n";
-  }
-  else if (random_number % 5 == 1)
-  {
+  } else if (random_number % 5 == 1) {
     os << "#define frm 1\n";
-  }
-  else if (random_number % 5 == 2)
-  {
+  } else if (random_number % 5 == 2) {
     os << "#define frm 2\n";
-  }
-  else if (random_number % 5 == 3)
-  {
+  } else if (random_number % 5 == 3) {
     os << "#define frm 3\n";
-  }
-  else
-  {
+  } else {
     os << "#define frm 4\n";
   }
 }
@@ -312,7 +285,6 @@ void Graph::generateCCode(std::ostream &os, uint32_t seed) {
   // declare values in global (avoid stack overflow)
   for (auto value : values)
     value->generateCCode(os);
-    
 
   // generate function calls for the operators
   for (auto id : ordering) {
