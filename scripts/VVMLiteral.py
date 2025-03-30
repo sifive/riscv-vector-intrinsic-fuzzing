@@ -1,6 +1,7 @@
 vvm_literal_start0 = "void compute"
 vvm_literal_start1 = "Op(RIF::OperatorBase *op) {\n"
 vvm_literal_body = '''
+  //scripts/VVMLiteral.py vvm_literal_body
   assert(a->length == b->length && a->length == c->length && a->length == d->length);
 
   auto length = a->length;
@@ -81,9 +82,9 @@ def create_vvm_op(op_type, op_id, op_attr, output_type, input_num, input_types) 
   ret += vvm_literal_start0 + op_type + vvm_literal_start1
   for i in range(input_num) :
     var = chr(ord('a') + i)
-    ret += "  auto " + var + " = static_cast<RIF::" + input_types[i] + "Val *>(op->inputs[" + str(i) + "]);\n"
+    ret += "  auto " + var + " = static_cast<RIF::" + input_types[i] + "Val *>(op->inputs[" + str(i) + "]); // scripts/VVMLiteral.py create_vvm_op \n"
   var = chr(ord('a') + input_num)
-  ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->outputs[0]);\n"
+  ret += "  auto " + var + " = static_cast<RIF::" + output_type + "Val *>(op->outputs[0]); // scripts/VVMLiteral.py create_vvm_op \n"
   if "TailUndisturbed" in op_attr :
     if "MergeOperation" in op_attr :
       ret += merge_vvm_tu_literal_body + include_literal("v" + op_id + ".h") + vvm_tu_literal_end

@@ -10,21 +10,21 @@ int dataB = 3;
 
 TEST(Golden, SubVX8VInt8_m) {
   MASK_VV_VX_GEN_TEST(OneDBool, OneDInt8, OneDInt8, ScalarInt8, OneDInt8,
-                      MASK_VX_VALUE_INIT, SubVX8VInt8_m);
+                      MASK_VX_VALUE_INIT, SubVX8VInt8VBVISI_m);
   EXPECT_EQ(verifyResult(output, golden), true);
 }
 TEST(Golden, SubVX16VInt16_m) {
   MASK_VV_VX_GEN_TEST(OneDBool, OneDInt16, OneDInt16, ScalarInt16, OneDInt16,
-                      MASK_VX_VALUE_INIT, SubVX16VInt16_m);
+                      MASK_VX_VALUE_INIT, SubVX16VInt16VBVISI_m);
   EXPECT_EQ(verifyResult(output, golden), true);
 }
 TEST(Golden, SubVX32VInt32_m) {
   MASK_VV_VX_GEN_TEST(OneDBool, OneDInt32, OneDInt32, ScalarInt32, OneDInt32,
-                      MASK_VX_VALUE_INIT, SubVX32VInt32_m);
+                      MASK_VX_VALUE_INIT, SubVX32VInt32VBVISI_m);
   EXPECT_EQ(verifyResult(output, golden), true);
 }
 TEST(Golden, SubVX64VInt64_m) {
   MASK_VV_VX_GEN_TEST(OneDBool, OneDInt64, OneDInt64, ScalarInt64, OneDInt64,
-                      MASK_VX_VALUE_INIT, SubVX64VInt64_m);
+                      MASK_VX_VALUE_INIT, SubVX64VInt64VBVISI_m);
   EXPECT_EQ(verifyResult(output, golden), true);
 }

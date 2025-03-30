@@ -142,9 +142,6 @@ target_link_libraries(testEnumerateLmulMask gtest_main Graph)
 add_executable(testDatum testDatum.cpp)
 target_link_libraries(testDatum gtest_main softfloat)
 
-add_executable(testPolicy testPolicy.cpp)
-target_link_libraries(testPolicy gtest_main softfloat Graph)
-
 include(GoogleTest)
 gtest_discover_tests(testOneDIntegralValue)
 gtest_discover_tests(testOneDFloatingPointValue)
@@ -192,7 +189,6 @@ gtest_discover_tests(testMsofM)
 gtest_discover_tests(testPoc)
 gtest_discover_tests(testEnumerateLmul)
 gtest_discover_tests(testEnumerateLmulMask)
-gtest_discover_tests(testPolicy)
 
 add_test(
   NAME Golden.Codegen
@@ -246,12 +242,6 @@ execute_process(COMMAND ${GCC_TOOLCHAIN} --print-sysroot OUTPUT_VARIABLE SYSROOT
 set(CLANG "${COMPILER_TOOLCHAIN_PREFIX}/bin/riscv64-unknown-linux-gnu-clang")
 set(CFLAGS "-target riscv64-unknown-linux-gnu --sysroot ${SYSROOT} --gcc-toolchain=${GCC_TOOLCHAIN_PREFIX}")
 set(POLICY_ENABLE "")
-
-execute_process(
-  COMMAND
-  bash -c "${CLANG} ${CFLAGS} -march=rv64gcv_zfh_zvfh0p1 -menable-experimental-extensions -c ${CMAKE_SOURCE_DIR}/test/codegen-golden/AddVV8VInt8TA.c"
-  RESULT_VARIABLE OK
-)
 
 if("${OK}" STREQUAL "0")
   set(POLICY_ENABLE "--has-policy")

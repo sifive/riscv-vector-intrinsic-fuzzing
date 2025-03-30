@@ -10,7 +10,7 @@ This repository aims to create fuzz testing for the RVV C intrinsic.
 
 ```
 ./rif-test --help
-usage: rif-test [-h] [--gen {random_gen,fused_gen}] [--sim SIM] [--cc CC] 
+usage: rif-test [-h] [--gen {random_gen,fused_gen}] [--sim SIM] [--cc CC]
                 [--mode {full,fast}] [--node NODE] [--arch ARCH] [--abi ABI]
                 [--cflags CFLAGS] [--seed SEED] [--random {on,off}] [--has-policy]
 

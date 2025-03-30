@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
   auto b = getInitializeValue(OneDInt32, graph, "B", length);
   auto c = graph.getNewValue(OneDInt32, "value_C", length);
 
-  auto op1 = graph.getNewOperator(CustomValType::AddVV32VInt32, "op1");
+  auto op1 = graph.getNewOperator(CustomValType::AddVV32VInt32VIVI, "op1");
 
   op1->addInput(0, a);
   op1->addInput(1, b);

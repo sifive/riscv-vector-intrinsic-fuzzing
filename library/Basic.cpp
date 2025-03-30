@@ -27,7 +27,7 @@ bool isScalarValue(const ValueBase *value) {
 
 bool isOneDValue(const ValueBase *value) {
   if (value->typeID.find("Op") != std::string::npos) {
-    std::cerr << "[isScalarValue] Should not feed operator to isOneDValue\n";
+    std::cerr << "[isOneDValue] Should not feed operator to isOneDValue\n";
     exit(1);
   }
   return value->typeID.find("OneD") != std::string::npos;
@@ -61,7 +61,8 @@ DataTypeEnum getDataTypeEnum(const char *dataTypeString) {
   else if (strcmp(dataTypeString, "size_t") == 0)
     return DataTypeEnum::Size_t;
   else
-    assert(false && "Unhandled type");
+    std::cerr << "Unhandled type: " << dataTypeString << std::endl;
+  assert(false && "Unhandled type");
 }
 
 bool isIntegral(DataTypeEnum dt) {
@@ -93,6 +94,10 @@ bool isNarrowingValue(ValueBase *x, ValueBase *y) {
     return false;
   return x->typeInfo->sew.to_int() * 2 == y->typeInfo->sew.to_int();
 }
+
+bool isFRM(OperatorBase *op) { return op->opAttr & FRM; }
+
+bool isVXRM(OperatorBase *op) { return op->opAttr & VXRM; }
 
 bool hasMask(const OperatorBase *op) { return op->opAttr & MaskedOperation; }
 
@@ -202,7 +207,7 @@ ValueBase *getVs1(OperatorBase *op) {
       vs1 = hasTU(op) ? op->inputs[3] : op->inputs[2];
     } else
       vs1 = hasMask(op)
-                ? (op->opAttr & NoMaskedOff ? op->inputs[2] : op->inputs[3])
+                ? (op->opAttr & NoMaskedOff ? op->inputs[1] : op->inputs[2])
             : hasTU(op) ? op->inputs[2]
                         : op->inputs[1];
   }
